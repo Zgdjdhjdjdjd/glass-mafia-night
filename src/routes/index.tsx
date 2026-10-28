@@ -50,6 +50,7 @@ function Game() {
   const [role, setRole] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const [loadError, setLoadError] = useState("");
 
   useEffect(() => {
     setToken(getToken());
@@ -63,7 +64,7 @@ function Game() {
       try {
         const s = await fetchState({ data: { token } });
         if (!alive) return;
-        setState(s);
+        setState(s); setLoadError("");
         if (!s.started) setRole(null);
         if (admin) {
           const a = await fetchAdmin({ data: { adminToken: admin } });
@@ -112,7 +113,13 @@ function Game() {
   });
 
   if (!state) {
-    return <Shell><p className="text-center text-muted-foreground">Loading…</p></Shell>;
+    return (
+      <Shell>
+        <p className="text-center text-muted-foreground">
+          {loadError ? `Can't reach the game server: ${loadError}` : "Loading…"}
+        </p>
+      </Shell>
+    );
   }
 
   return (
