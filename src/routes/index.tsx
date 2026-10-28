@@ -71,7 +71,7 @@ function Game() {
           if (!a.ok) { localStorage.removeItem("mafia_admin"); setAdmin(null); }
           else if (alive) setChart(a.players);
         }
-      } catch { /* retry next tick */ }
+      } catch (e) { if (alive) setLoadError(e instanceof Error ? e.message : "unknown error"); }
     };
     tick();
     const id = setInterval(tick, 2000);
