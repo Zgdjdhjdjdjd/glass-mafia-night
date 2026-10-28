@@ -7,10 +7,11 @@ CREATE OR REPLACE FUNCTION public.mafia_is_admin(p_token text) RETURNS boolean L
   SELECT EXISTS (SELECT 1 FROM public.admin_config WHERE id = 1 AND token_hash = p_token);
 $$;
 --> statement-breakpoint
-CREATE OR REPLACE FUNCTION public.mafia_state() RETURNS json LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $$
+CREATE OR REPLACE FUNCTION public.mafia_state(p_token text) RETURNS json LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $$
   SELECT json_build_object(
-    'players', COALESCE((SELECT json_agg(json_build_object('name', name, 'token', token) ORDER BY joined_at) FROM public.players), '[]'::json),
-    'started', COALESCE((SELECT started FROM public.game_state WHERE id = 1), false));
+    'names', COALESCE((SELECT json_agg(name ORDER BY joined_at) FROM public.players), '[]'::json),
+    'started', COALESCE((SELECT started FROM public.game_state WHERE id = 1), false),
+    'myName', (SELECT name FROM public.players WHERE token = p_token));
 $$;
 --> statement-breakpoint
 CREATE OR REPLACE FUNCTION public.mafia_join(p_token text, p_name text) RETURNS text LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
@@ -53,4 +54,4 @@ BEGIN
 END $$;
 --> statement-breakpoint
 REVOKE EXECUTE ON FUNCTION public.mafia_is_admin(text) FROM PUBLIC, anon, authenticated;
-GRANT EXECUTE ON FUNCTION public.mafia_state(), public.mafia_join(text, text), public.mafia_my_card(text), public.mafia_admin_view(text), public.mafia_start(text), public.mafia_reset(text) TO anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.mafia_state(text), public.mafia_join(text, text), public.mafia_my_card(text), public.mafia_admin_view(text), public.mafia_start(text), public.mafia_reset(text) TO anon, authenticated;
