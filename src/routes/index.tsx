@@ -1,9 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { useServerFn } from "@tanstack/react-start";
 import {
   getState, joinGame, getMyCard, unlockAdmin, adminView, startGame, resetGame,
-} from "@/lib/game.functions";
+} from "@/lib/game";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -32,14 +31,6 @@ function getToken() {
 }
 
 function Game() {
-  const fetchState = useServerFn(getState);
-  const join = useServerFn(joinGame);
-  const fetchCard = useServerFn(getMyCard);
-  const unlock = useServerFn(unlockAdmin);
-  const fetchAdmin = useServerFn(adminView);
-  const start = useServerFn(startGame);
-  const reset = useServerFn(resetGame);
-
   const [token, setToken] = useState<string | null>(null);
   const [admin, setAdmin] = useState<string | null>(null);
   const [state, setState] = useState<State | null>(null);
@@ -62,14 +53,14 @@ function Game() {
     let alive = true;
     const tick = async () => {
       try {
-        const s = await fetchState({ data: { token } });
+        const s = await getState(token);
         if (!alive) return;
         setState(s); setLoadError("");
         if (!s.started) setRole(null);
         if (admin) {
-          const a = await fetchAdmin({ data: { adminToken: admin } });
-          if (!a.ok) { localStorage.removeItem("mafia_admin"); setAdmin(null); }
-          else if (alive) setChart(a.players);
+          const a = await adminView(admin);
+          if (a === null) { localStorage.removeItem("mafia_admin"); setAdmin(null); }
+          else if (alive) setChart(a);
         }
       } catch (e) { if (alive) setLoadError(e instanceof Error ? e.message : "unknown error"); }
     };
@@ -85,31 +76,30 @@ function Game() {
   };
 
   const onJoin = () => run(async () => {
-    const r = await join({ data: { token: token!, name } });
+    const r = await joinGame(token!, name);
     if (!r.ok) setError(r.error);
-    else setState(await fetchState({ data: { token: token! } }));
+    else setState(await getState(token!));
   });
 
   const onUnlock = () => run(async () => {
-    const r = await unlock({ data: { code } });
-    if (!r.ok) { setError("Wrong code."); return; }
-    localStorage.setItem("mafia_admin", r.adminToken);
-    setAdmin(r.adminToken); setCode(""); setShowUnlock(false);
+    const t = await unlockAdmin(code);
+    if (!t) { setError("Wrong code."); return; }
+    localStorage.setItem("mafia_admin", t);
+    setAdmin(t); setCode(""); setShowUnlock(false);
   });
 
   const onStart = () => run(async () => {
-    const r = await start({ data: { adminToken: admin! } });
+    const r = await startGame(admin!);
     if (!r.ok) setError(r.error);
   });
 
   const onReset = () => {
     if (!confirm("Reset the game? All cards will be cleared and everyone returns to the lobby.")) return;
-    run(async () => { await reset({ data: { adminToken: admin! } }); setRole(null); });
+    run(async () => { await resetGame(admin!); setRole(null); });
   };
 
   const onReveal = () => run(async () => {
-    const r = await fetchCard({ data: { token: token! } });
-    setRole(r.role);
+    setRole(await getMyCard(token!));
   });
 
   if (!state) {
