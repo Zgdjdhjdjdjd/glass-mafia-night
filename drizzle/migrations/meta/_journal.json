@@ -19,8 +19,8 @@
     {
       "idx": 2,
       "version": "7",
-      "when": 1793169991759,
-      "tag": "0002_migration",
+      "when": 1793171918871,
+      "tag": "0002_mafia_rpc_functions",
       "breakpoints": true
     }
   ]

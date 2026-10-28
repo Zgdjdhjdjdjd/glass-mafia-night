@@ -14,6 +14,21 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_config: {
+        Row: {
+          id: number
+          token_hash: string
+        }
+        Insert: {
+          id?: number
+          token_hash: string
+        }
+        Update: {
+          id?: number
+          token_hash?: string
+        }
+        Relationships: []
+      }
       game_state: {
         Row: {
           id: number
@@ -58,7 +73,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      mafia_admin_view: { Args: { p_admin: string }; Returns: Json }
+      mafia_is_admin: { Args: { p_token: string }; Returns: boolean }
+      mafia_join: { Args: { p_name: string; p_token: string }; Returns: string }
+      mafia_my_card: { Args: { p_token: string }; Returns: string }
+      mafia_reset: { Args: { p_admin: string }; Returns: boolean }
+      mafia_start: { Args: { p_admin: string }; Returns: string }
+      mafia_state: { Args: { p_token: string }; Returns: Json }
     }
     Enums: {
       [_ in never]: never
