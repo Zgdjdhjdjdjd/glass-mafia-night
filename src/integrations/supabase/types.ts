@@ -14,7 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      game_state: {
+        Row: {
+          id: number
+          started: boolean
+        }
+        Insert: {
+          id?: number
+          started?: boolean
+        }
+        Update: {
+          id?: number
+          started?: boolean
+        }
+        Relationships: []
+      }
+      players: {
+        Row: {
+          id: string
+          joined_at: string
+          name: string
+          role: string | null
+          token: string
+        }
+        Insert: {
+          id?: string
+          joined_at?: string
+          name: string
+          role?: string | null
+          token: string
+        }
+        Update: {
+          id?: string
+          joined_at?: string
+          name?: string
+          role?: string | null
+          token?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
