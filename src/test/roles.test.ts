@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { assignRoles } from "@/lib/game.functions";
+import { assignRoles } from "@/lib/game";
 const count = (r: string[], x: string) => r.filter((y) => y === x).length;
 describe("assignRoles", () => {
   it("23 players: 3 mafia, 1 joker, 1 detective, 1 doctor, 17 civilians", () => {
