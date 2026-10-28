@@ -28,8 +28,8 @@ export function assignRoles(count: number): string[] {
   for (let i = roles.length - 1; i > 0; i--) {
     const r = new Uint32Array(1);
     crypto.getRandomValues(r);
-    const j = r[0] % (i + 1);
-    [roles[i], roles[j]] = [roles[j], roles[i]];
+    const j = r[0]! % (i + 1);
+    [roles[i], roles[j]] = [roles[j]!, roles[i]!];
   }
   return roles;
 }
@@ -110,7 +110,7 @@ export const startGame = createServerFn({ method: "POST" })
     if (list.length < 6) return { ok: false as const, error: "At least 6 players are needed." };
     const roles = assignRoles(list.length);
     for (let i = 0; i < list.length; i++) {
-      await sb.from("players").update({ role: roles[i] }).eq("id", list[i].id);
+      await sb.from("players").update({ role: roles[i]! }).eq("id", list[i]!.id);
     }
     await sb.from("game_state").update({ started: true }).eq("id", 1);
     return { ok: true as const };

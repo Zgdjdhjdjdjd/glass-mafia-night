@@ -1,0 +1,1 @@
+DELETE FROM public.players WHERE name = 'Tester';
