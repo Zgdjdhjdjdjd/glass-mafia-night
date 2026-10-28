@@ -2,8 +2,8 @@
 // so the game works on any static or serverless host (Vercel, Netlify, ...) with no setup.
 // All game rules and privacy checks live in the database functions.
 const URL =
-  import.meta.env.VITE_SUPABASE_URL || "https://c--15f635b6-4e50-4f82-ab7b-872d67354ba4-prod.lovable.cloud";
-const KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || "sb_publishable_YMaDIFhzaVkCcyx4qo8AIA_abJI9xGB";
+  import.meta.env['VITE_SUPABASE_URL'] || "https://c--15f635b6-4e50-4f82-ab7b-872d67354ba4-prod.lovable.cloud";
+const KEY = import.meta.env['VITE_SUPABASE_PUBLISHABLE_KEY'] || "sb_publishable_YMaDIFhzaVkCcyx4qo8AIA_abJI9xGB";
 
 export const MAX_PLAYERS = 23;
 
